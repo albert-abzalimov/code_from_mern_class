@@ -26,11 +26,51 @@ app.get("/api/info", (req, res) => {
 });
 
 app.get("/api/contacts/:id", (req, res) => {
-    const id = req.params.id;
-    console.log(contacts);
-    const contact = contacts.find((value) => value.id === id);
-    console.log("contact: ", contact);
-    contact ? res.json(contact) : res.status(404).json({"error": "Could not find contact", "contact": contact});
+    const id = Number(req.params.id); 
+    const contact = contacts.find((value) => value.id === id); 
+    if (contact) {
+        res.json(contact);
+    } else {
+        res.status(404).json({ error: "Could not find contact" });
+    }
+});
+
+app.delete("/api/contacts/:id", (req, res) => {
+    const id = Number(req.params.id); 
+    const contactIndex = contacts.findIndex((contact) => contact.id === id); 
+
+    if (contactIndex !== -1) {
+        // Deletes one contact quite nicely
+        contacts.splice(contactIndex, 1);
+        res.status(204).send(); 
+    } else {
+        // Contact does not exist
+        res.status(404).json({ error: "Contact not found" });
+    }
+});
+
+
+app.post("/api/contacts", (req, res) => {
+    const { name, email } = req.body;
+
+    // Validate!
+    if (!name || !email) {
+        return res.status(400).json({ error: "Missing required fields: 'name' and/or 'email'" });
+    }
+
+    // More validate!
+    const emailExists = contacts.some((contact) => contact.email === email);
+    if (emailExists) {
+        return res.status(409).json({ error: "Email already exists" });
+    }
+
+    // unqiue id
+    const id = Math.floor(Math.random() * 1000000) + Date.now();
+
+    const newContact = { id, name, email };
+    contacts.push(newContact);
+
+    res.status(201).json(newContact);
 });
 
 
