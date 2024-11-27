@@ -5,6 +5,8 @@
   "scripts": {
     "start": "node index.js",
     "build-frontend": "rm -rf dist && cd ../contacts-app-frontend && npm install && npm run build && cp -r dist ../contacts-app-backend",
+    "build-frontend-windows": "rmdir /s /q dist && cd ../contacts-app-frontend && npm install && npm run build && xcopy dist ..\\contacts-app-backend /E /I /Y",
+    "deploy": "npm run build-frontend-windows && git add . && git commit -m deploy && git push",
     "dev" : "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
